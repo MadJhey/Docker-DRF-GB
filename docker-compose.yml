@@ -1,19 +1,20 @@
-version: "3.1"
+version: '3.1'
 
 services:
   db:
-    image: "postgres:13.1"
-    privileged: "true"
+    image: postgres:13.1
+    privileged: true
     ports:
-      - "5432:5432"
+      - 5432:5432
     environment:
-      POSTGRES_USER: "dante"
-      POSTGRES_PASSWORD: "dante123456"
-      POSTGRES_DB: "library"
-  adminer:
-    image: "adminer:4.7.8-standalone"
-    restart: "always"
+      POSTGRES_USER: dante
+      POSTGRES_PASSWORD: dante123456
+      POSTGRES_DB: library
+  backend:
+    build:
+      context: .
     ports:
-      - "8080:8080"
+      - 8080:8080
+    command: bash -c " ./wait-for-postgres.sh db && python manage.py migrate && python manage.py runserver 0.0.0.0:8080 "
     depends_on:
       - db
